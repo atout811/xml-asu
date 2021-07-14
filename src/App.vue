@@ -22,7 +22,14 @@ export default {
   },
   methods: {
     format() {
-      console.log("fuck")
+      let parser = new DOMParser();
+      let xmlDoc = parser.parseFromString(this.txt, "application/xml");
+      console.log(xmlDoc);
+      let errors = xmlDoc.getElementsByTagName("parsererror");
+      if(errors.length > 0){
+        console.log(errors)
+      }
+
     },
     fileload(ev) {
       const file = ev.target.files[0];
