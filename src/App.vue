@@ -6,7 +6,7 @@
     </div>
     <div>
       <input type="file" @change="fileload" />
-      <button @click="format"></button>
+      <button @click="format">Format</button>
     </div>
   </div>
 </template>
