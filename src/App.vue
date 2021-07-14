@@ -2,7 +2,7 @@
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png" />
     <div class="hello">
-      <textarea id="main-area" cols="169" rows="42" v-model="txt"></textarea>
+      <textarea cols="169" rows="42" spellcheck="false" v-model="txt"></textarea>
     </div>
     <div>
       <input type="file" @change="fileload" />
@@ -45,5 +45,14 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+.main{
+  width: 90%;
+  height: 90%;
+  border: 1px black solid;
+  text-align: left;
+}
+#main-area{
+  visibility: hidden;
 }
 </style>
