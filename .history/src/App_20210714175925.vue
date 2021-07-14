@@ -2,13 +2,7 @@
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png" />
     <div class="hello">
-      <textarea
-        id="main-area"
-        cols="169"
-        rows="42"
-        v-model="txt"
-        spellcheck="false"
-      ></textarea>
+      <div class="text" contenteditable="true">{{ txt }}</div>
     </div>
     <div>
       <input type="file" @change="fileload" />
@@ -27,9 +21,7 @@ export default {
   },
   methods: {
     format() {
-      let data = this.txt;
-      let stack = [];
-      let tree = {};
+      console.log("fuck");
     },
     fileload(ev) {
       const file = ev.target.files[0];

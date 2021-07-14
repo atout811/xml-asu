@@ -27,9 +27,7 @@ export default {
   },
   methods: {
     format() {
-      let data = this.txt;
-      let stack = [];
-      let tree = {};
+      console.log("fuck");
     },
     fileload(ev) {
       const file = ev.target.files[0];

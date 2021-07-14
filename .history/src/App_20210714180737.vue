@@ -30,6 +30,10 @@ export default {
       let data = this.txt;
       let stack = [];
       let tree = {};
+
+      for (const el of data) {
+        console.log(el);
+      }
     },
     fileload(ev) {
       const file = ev.target.files[0];
