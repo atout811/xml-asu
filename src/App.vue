@@ -1,19 +1,40 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <img alt="Vue logo" src="./assets/logo.png" />
+    <div class="hello">
+      <textarea id="main-area" cols="169" rows="42" v-model="txt"></textarea>
+    </div>
+    <div>
+      <input type="file" @change="fileload" />
+      <button @click="format"></button>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  name: "App",
+  data() {
+    return {
+      txt: "",
+    }
+  },
+  methods: {
+    format() {
+      console.log("fuck")
+    },
+    fileload(ev) {
+      const file = ev.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        this.txt = e.target.result;
+      };
+      reader.readAsText(file);
+    },
+  },
+};
 </script>
 
 <style>
