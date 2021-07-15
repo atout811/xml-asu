@@ -34,12 +34,15 @@
     <div>
       <input type="file" @change="fileload" />
       <button @click="format">Format</button>
+      <button @click="compress(content)">Compress</button>
+      <button @click="decompress(content)">DeCompress</button>
     </div>
   </div>
 </template>
 
 <script>
 import AceEditor from "vuejs-ace-editor";
+import Huffman from "./encoding";
 export default {
   components: {
     AceEditor,
@@ -114,6 +117,34 @@ export default {
       require("brace/mode/less");
       require("brace/theme/monokai");
       require("brace/snippets/javascript"); //snippet
+    },
+    findFrequentBigram(s) {
+      var i,
+        freqs = {},
+        topFreq = 0,
+        topPair = null,
+        bigram,
+        freq;
+
+      for (i = 0; i < s.length; i += 2) {
+        bigram = s.slice(i, i + 2);
+        freq = ++freqs[bigram];
+        if (!(freq > 0)) {
+          freqs[bigram] = 1;
+        } else if (freq > topFreq) {
+          topPair = bigram;
+          topFreq = freq;
+        }
+      }
+
+      return topPair;
+    },
+    compress(s) {
+      console.log(Huffman);
+      this.content = Huffman.encode(this.content);
+    },
+    decompress(s) {
+      this.content = Huffman.decode(this.content);
     },
   },
 };
