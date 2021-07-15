@@ -2,12 +2,34 @@
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png" />
     <div class="hello">
-      <textarea
-        cols="169"
-        rows="42"
-        spellcheck="false"
-        v-model="txt"
-      ></textarea>
+      <div class="err" v-if="error">{{ error[0].innerText }}</div>
+      <AceEditor
+        v-model="content"
+        @init="editorInit"
+        lang="javascript"
+        theme="monokai"
+        width="100%"
+        height="200px"
+        :options="{
+          enableBasicAutocompletion: true,
+          enableLiveAutocompletion: true,
+          fontSize: 14,
+          highlightActiveLine: true,
+          enableSnippets: true,
+          showLineNumbers: true,
+          tabSize: 2,
+          showPrintMargin: false,
+          showGutter: true,
+        }"
+        :commands="[
+          {
+            name: 'save',
+            bindKey: { win: 'Ctrl-s', mac: 'Command-s' },
+            exec: dataSumit,
+            readOnly: true,
+          },
+        ]"
+      />
     </div>
     <div>
       <input type="file" @change="fileload" />
@@ -17,69 +39,82 @@
 </template>
 
 <script>
+import AceEditor from "vuejs-ace-editor";
 export default {
+  components: {
+    AceEditor,
+  },
   name: "App",
   data() {
     return {
-      txt: "",
-<<<<<<< HEAD
+      content: "",
+      new_content: "",
+      error: "",
     };
-=======
-      new_txt: "",
-    }
->>>>>>> a24cc056795f076dc8fea109b0bbeb9c0e962860
   },
   methods: {
     format() {
       let parser = new DOMParser();
-      let xmlDoc = parser.parseFromString(this.txt, "application/xml");
-      console.log(xmlDoc.childNodes);
+      let xmlDoc = parser.parseFromString(this.content, "application/xml");
+      console.log(xmlDoc);
       let errors = xmlDoc.getElementsByTagName("parsererror");
       if (errors.length > 0) {
+        this.error = errors;
         console.log(errors);
+      } else {
+        this.error = "";
+        console.log("heey", xmlDoc);
+        for (let d of xmlDoc.children) {
+          this.prettify(d, 0);
+        }
+        this.content = this.new_content;
+        this.new_content = "";
       }
-      for (const el of xmlDoc.childNodes) {
-        console.log("heey", el);
-      }
-<<<<<<< HEAD
-=======
-      this.prettify(xmlDoc.activeElement, 0);
-      this.txt = this.new_txt;
-      this.new_txt = "";
-
->>>>>>> a24cc056795f076dc8fea109b0bbeb9c0e962860
     },
     fileload(ev) {
       const file = ev.target.files[0];
       const reader = new FileReader();
 
       reader.onload = (e) => {
-        this.txt = e.target.result;
+        this.content = e.target.result;
       };
       reader.readAsText(file);
     },
-    prettify(doc, indentation){
-      try{
-          let attrs = "";
-          for(let a of doc.attributes){
-            attrs += ` ${a.name}="${a.textContent}"`
-          }
-          var tabs = "";
-          for(let i=0; i<indentation; i++) {tabs += "\t"}
-
-          this.new_txt += `${tabs}<${doc.tagName}${attrs}>\n`;
-          for(let d of doc.children){
-            this.prettify(d, indentation + 1);
-          }
-          if(doc.children.length == 0){
-            this.new_txt += tabs + "\t" + doc.textContent + "\n"
-          }
-          this.new_txt += `${tabs}</${doc.tagName}>\n`
-        }catch(e){
-          console.log(doc);
-          console.log(e);
+    prettify(doc, indentation) {
+      try {
+        var attrs = "";
+        for (let a of doc.attributes) {
+          attrs += ` ${a.name}="${a.textContent}"`;
         }
+        var tabs = "";
+        for (let i = 0; i < indentation; i++) {
+          tabs += "\t";
+        }
+
+        this.new_content += `${tabs}<${doc.tagName}${attrs}>\n`;
+        for (let d of doc.children) {
+          this.prettify(d, indentation + 1);
+        }
+        if (doc.children.length == 0) {
+          this.new_content += tabs + "\t" + doc.textContent + "\n";
+        }
+        this.new_content += `${tabs}</${doc.tagName}>\n`;
+      } catch (e) {
+        console.log(doc);
+        console.log(e);
       }
+    },
+    dataSumit() {
+      //code here
+    },
+    editorInit: function () {
+      require("brace/ext/language_tools"); //language extension prerequsite...
+      require("brace/mode/html");
+      require("brace/mode/xml"); //language
+      require("brace/mode/less");
+      require("brace/theme/monokai");
+      require("brace/snippets/javascript"); //snippet
+    },
   },
 };
 </script>
@@ -98,6 +133,9 @@ export default {
   height: 90%;
   border: 1px black solid;
   text-align: left;
+}
+.err {
+  color: red;
 }
 #main-area {
   visibility: hidden;
