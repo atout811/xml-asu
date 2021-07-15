@@ -33,9 +33,13 @@
     </div>
     <div>
       <input type="file" @change="fileload" />
-      <button @click="format">Format</button>
+      <button @click="format" :disabled="formatted">Format</button>
       <button @click="compress(content)">Compress</button>
       <button @click="decompress(content)">DeCompress</button>
+      <button @click="toJson">toJson</button>
+    </div>
+    <div style="text-align: left;">
+      <pre>{{ jsoned }}</pre>
     </div>
   </div>
 </template>
@@ -53,20 +57,45 @@ export default {
       content: "",
       new_content: "",
       error: "",
+      jsoned: null,
+      formatted: false
     };
   },
   methods: {
+    toJsonRecurse(doc, arr = false) {
+      if (!doc.children || !doc.children.length) {
+        return doc.textContent.trim();
+      }
+      let obj = {};
+      for (let d of doc.children) {
+        if (d.tagName in obj) {
+          if (Array.isArray(obj[d.tagName])) {
+            obj[d.tagName].push(this.toJsonRecurse(d, true));
+          } else {
+            obj[d.tagName] = [obj[d.tagName], this.toJsonRecurse(d, true)];
+          }
+        } else {
+          obj[d.tagName] = this.toJsonRecurse(d);
+        }
+      }
+      return obj;
+    },
+    toJson() {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(this.content, "application/xml");
+      this.jsoned = JSON.stringify(this.toJsonRecurse(doc), undefined, 4);
+      console.log(this.jsoned);
+    },
     format() {
+      this.formatted = true;
       let parser = new DOMParser();
       let xmlDoc = parser.parseFromString(this.content, "application/xml");
-      console.log(xmlDoc);
       let errors = xmlDoc.getElementsByTagName("parsererror");
       if (errors.length > 0) {
         this.error = errors;
         console.log(errors);
       } else {
         this.error = "";
-        console.log("heey", xmlDoc);
         for (let d of xmlDoc.children) {
           this.prettify(d, 0);
         }
@@ -91,7 +120,7 @@ export default {
         }
         var tabs = "";
         for (let i = 0; i < indentation; i++) {
-          tabs += "\t";
+          tabs += "    ";
         }
 
         this.new_content += `${tabs}<${doc.tagName}${attrs}>\n`;
@@ -99,7 +128,7 @@ export default {
           this.prettify(d, indentation + 1);
         }
         if (doc.children.length == 0) {
-          this.new_content += tabs + "\t" + doc.textContent + "\n";
+          this.new_content += tabs + "    " + doc.textContent + "\n";
         }
         this.new_content += `${tabs}</${doc.tagName}>\n`;
       } catch (e) {
@@ -140,7 +169,6 @@ export default {
       return topPair;
     },
     compress(s) {
-      console.log(Huffman);
       this.content = Huffman.encode(this.content);
     },
     decompress(s) {
