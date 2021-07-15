@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
+    <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
+    <h2>XML Editor</h2>
     <div class="hello">
       <div class="err" v-if="error">{{ error[0].innerText }}</div>
       <AceEditor
@@ -37,8 +38,9 @@
       <button @click="compress(content)">Compress</button>
       <button @click="decompress(content)">DeCompress</button>
       <button @click="toJson">toJson</button>
+      <button @click="mini">Minifying</button>
     </div>
-    <div style="text-align: left;">
+    <div style="text-align: left">
       <pre>{{ jsoned }}</pre>
     </div>
   </div>
@@ -58,7 +60,7 @@ export default {
       new_content: "",
       error: "",
       jsoned: null,
-      formatted: false
+      formatted: false,
     };
   },
   methods: {
@@ -79,6 +81,42 @@ export default {
         }
       }
       return obj;
+    },
+    minifying(doc) {
+      try {
+        console.log(this.new_content);
+        var attrs = "";
+        for (let a of doc.attributes) {
+          attrs += `${a.name}="${a.textContent}"`;
+        }
+
+        this.new_content += `<${doc.tagName}${attrs}>`;
+        for (let d of doc.children) {
+          this.minifying(d);
+        }
+        if (doc.children.length == 0) {
+          this.new_content += doc.textContent;
+        }
+        this.new_content += `</${doc.tagName}>`;
+      } catch (e) {
+        console.log(doc);
+        console.log(e);
+      }
+    },
+    mini() {
+      let parser = new DOMParser();
+      let xmlDoc = parser.parseFromString(this.content, "application/xml");
+      let errors = xmlDoc.getElementsByTagName("parsererror");
+      if (errors.length > 0) {
+        this.error = errors;
+        console.log(errors);
+      } else {
+        this.error = "";
+        for (let d of xmlDoc.children) {
+          this.minifying(d);
+        }
+        this.content = this.new_content;
+      }
     },
     toJson() {
       let parser = new DOMParser();
