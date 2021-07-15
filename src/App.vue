@@ -28,10 +28,13 @@ export default {
     format() {
       let parser = new DOMParser();
       let xmlDoc = parser.parseFromString(this.txt, "application/xml");
-      console.log(xmlDoc);
+      console.log(xmlDoc.childNodes);
       let errors = xmlDoc.getElementsByTagName("parsererror");
       if (errors.length > 0) {
         console.log(errors);
+      }
+      for (const el of xmlDoc.childNodes) {
+        console.log("heey", el);
       }
     },
     fileload(ev) {
