@@ -22,7 +22,12 @@ export default {
   data() {
     return {
       txt: "",
+<<<<<<< HEAD
     };
+=======
+      new_txt: "",
+    }
+>>>>>>> a24cc056795f076dc8fea109b0bbeb9c0e962860
   },
   methods: {
     format() {
@@ -36,6 +41,13 @@ export default {
       for (const el of xmlDoc.childNodes) {
         console.log("heey", el);
       }
+<<<<<<< HEAD
+=======
+      this.prettify(xmlDoc.activeElement, 0);
+      this.txt = this.new_txt;
+      this.new_txt = "";
+
+>>>>>>> a24cc056795f076dc8fea109b0bbeb9c0e962860
     },
     fileload(ev) {
       const file = ev.target.files[0];
@@ -46,6 +58,28 @@ export default {
       };
       reader.readAsText(file);
     },
+    prettify(doc, indentation){
+      try{
+          let attrs = "";
+          for(let a of doc.attributes){
+            attrs += ` ${a.name}="${a.textContent}"`
+          }
+          var tabs = "";
+          for(let i=0; i<indentation; i++) {tabs += "\t"}
+
+          this.new_txt += `${tabs}<${doc.tagName}${attrs}>\n`;
+          for(let d of doc.children){
+            this.prettify(d, indentation + 1);
+          }
+          if(doc.children.length == 0){
+            this.new_txt += tabs + "\t" + doc.textContent + "\n"
+          }
+          this.new_txt += `${tabs}</${doc.tagName}>\n`
+        }catch(e){
+          console.log(doc);
+          console.log(e);
+        }
+      }
   },
 };
 </script>
